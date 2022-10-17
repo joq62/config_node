@@ -101,14 +101,13 @@ item()->
 
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
-    "production"=cluster_spec:item(name,"production"),
-    "production_cookie"=cluster_spec:item(cookie,"production"),
-    "production.dir"=cluster_spec:item(dir,"production"),
-    ["c100","c200","c201"]=cluster_spec:item(hostnames,"production"),
-    4=cluster_spec:item(num_pods,"production"),
+  
+    "production_cookie"=config_node:cluster_cookie("production"),
+    "production.dir"=config_node:cluster_dir("production"),
+    ["c100","c200","c201"]=config_node:cluster_hostnames("production"),
+    4=config_node:cluster_num_pods("production"),
     
-    {error,[undefined_key,glurk]}=cluster_spec:item(glurk,"production"),
-    {error,[cluster_name_eexists,"glurk"]}=cluster_spec:item(uid,"glurk"),
+    {error,[cluster_name_eexists,"glurk"]}=config_node:cluster_num_pods("glurk"),
     
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    
 

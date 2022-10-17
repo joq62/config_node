@@ -107,14 +107,12 @@ item()->
 
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
-    "sd"=application_spec:item(name,"sd"),
-    ["0.1.0"]=application_spec:item(vsn,"sd"),
-    sd=application_spec:item(app,"sd"),
-    "https://github.com/joq62/sd.git"=application_spec:item(gitpath,"sd"),
+    
+    ["0.1.0"]=config_node:application_vsn("sd"),
+    sd=config_node:application_app("sd"),
+    "https://github.com/joq62/sd.git"=config_node:application_gitpath("sd"),
 
-   
-    {error,[undefined_key,glurk]}=application_spec:item(glurk,"sd"),
-    {error,[application_name_eexists,"glurk"]}=application_spec:item(app,"glurk"),
+    {error,[application_name_eexists,"glurk"]}=config_node:application_gitpath("glurk"),
     
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    
 

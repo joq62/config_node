@@ -36,12 +36,21 @@
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
+-export([ 
+	  cluster_cookie/1,
+	  cluster_dir/1,
+	  cluster_hostnames/1,
+	  cluster_num_pods/1
+	  
+	]).
+
 
 -export([ %application_info_specs
 
 	  application_all_files/0,
 	  application_all_filenames/0,
 	  application_all_info/0,
+	  application_app/1,
 	  application_vsn/1,
 	  application_gitpath/1,
 	  application_start_cmd/1,
@@ -98,14 +107,14 @@ stop()-> gen_server:call(?SERVER, {stop},infinity).
 
 %% cluster spec
 
-cluster_cookie(AppId)->
-    gen_server:call(?SERVER, {cluster_cookie,AppId},infinity).
-cluster_dir(AppId)->
-    gen_server:call(?SERVER, {cluster_dir,AppId},infinity).
-cluster_hostnames(AppId)->
-    gen_server:call(?SERVER, {cluster_hostnames,AppId},infinity).
-cluster_num_pods(AppId)->
-    gen_server:call(?SERVER, {cluster_num_pods,AppId},infinity).
+cluster_cookie(ClusterName)->
+    gen_server:call(?SERVER, {cluster_cookie,ClusterName},infinity).
+cluster_dir(ClusterName)->
+    gen_server:call(?SERVER, {cluster_dir,ClusterName},infinity).
+cluster_hostnames(ClusterName)->
+    gen_server:call(?SERVER, {cluster_hostnames,ClusterName},infinity).
+cluster_num_pods(ClusterName)->
+    gen_server:call(?SERVER, {cluster_num_pods,ClusterName},infinity).
 
 
 %% application spec
@@ -118,6 +127,8 @@ application_all_info()->
     gen_server:call(?SERVER, {application_all_info},infinity).
 application_vsn(AppId)->
     gen_server:call(?SERVER, {application_vsn,AppId},infinity).
+application_app(AppId)->
+    gen_server:call(?SERVER, {application_app,AppId},infinity).
 application_gitpath(AppId)->
     gen_server:call(?SERVER, {application_gitpath,AppId},infinity).
 application_start_cmd(AppId)->
@@ -258,24 +269,28 @@ handle_call({application_all_info},_From,State) ->
     {reply, Reply, State};
 
 
+handle_call({application_app,AppId},_From,State) ->
+    Reply=application_spec:item(app,AppId),
+    {reply, Reply, State};
+
 handle_call({application_vsn,AppId},_From,State) ->
-    Reply=appl_lib:item(vsn,AppId),
+    Reply=application_spec:item(vsn,AppId),
     {reply, Reply, State};
 
 handle_call({application_gitpath,AppId},_From,State) ->
-    Reply=appl_lib:item(gitpath,AppId),
+    Reply=application_spec:item(gitpath,AppId),
     {reply, Reply, State};
 
 handle_call({application_start_cmd,AppId},_From,State) ->
-    Reply=appl_lib:item(cmd,AppId),
+    Reply=application_spec:item(cmd,AppId),
     {reply, Reply, State};
 
 handle_call({application_member,AppId},_From,State) ->
-    Reply=appl_lib:member(AppId),
+    Reply=application_spec:member(AppId),
     {reply, Reply, State};
 
 handle_call({application_member,AppId,Vsn},_From,State) ->
-    Reply=appl_lib:member(AppId,Vsn),
+    Reply=application_spec:member(AppId,Vsn),
     {reply, Reply, State};
 
 %%--------------- host_info_specs
@@ -314,20 +329,20 @@ handle_call({host_application_config,HostName},_From,State) ->
 
 %%--------------- cluster specs
 
-handle_call({cluster_cookie,AppId},_From,State) ->
-    Reply=cluster_spec:item(cookie,AppId),
+handle_call({cluster_cookie,ClusterName},_From,State) ->
+    Reply=cluster_spec:item(cookie,ClusterName),
     {reply, Reply, State};
 
-handle_call({cluster_dir,AppId},_From,State) ->
-    Reply=cluster_spec:item(dir,AppId),
+handle_call({cluster_dir,ClusterName},_From,State) ->
+    Reply=cluster_spec:item(dir,ClusterName),
     {reply, Reply, State};
 
-handle_call({cluster_hostnames,AppId},_From,State) ->
-    Reply=cluster_spec:item(hostnames,AppId),
+handle_call({cluster_hostnames,ClusterName},_From,State) ->
+    Reply=cluster_spec:item(hostnames,ClusterName),
     {reply, Reply, State};
 
-handle_call({cluster_num_pods,AppId},_From,State) ->
-    Reply=cluster_spec:item(num_pods,AppId),
+handle_call({cluster_num_pods,ClusterName},_From,State) ->
+    Reply=cluster_spec:item(num_pods,ClusterName),
     {reply, Reply, State};
 
 
