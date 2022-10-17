@@ -3,6 +3,7 @@ all:
 	rm -rf _build logs log *.pod_dir;
 	rm -rf deployments *_info_specs;
 	rm -rf _build test_ebin ebin;
+	rm -rf *.application *.cluster *.deployment *.host;
 	mkdir ebin;		
 	rebar3 compile;	
 	cp _build/default/lib/*/ebin/* ebin;
@@ -32,6 +33,7 @@ eunit:
 	rm -rf  *~ */*~ src/*.beam test/*.beam test_ebin erl_cra*;
 	rm -rf _build logs log *.pod_dir;
 	rm -rf deployments *_info_specs;
+	rm -rf *.application *.cluster *.deployment *.host;	
 	rm -rf config sd;
 	rm -rf rebar.lock;
 	rm -rf Mnesia.*;
