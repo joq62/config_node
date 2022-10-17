@@ -6,7 +6,8 @@
               {applications,[kernel,stdlib]},
               {env,[]},
               {modules,[application_spec,cluster_data,cluster_spec,
-                        config_node_app,config_node_sup,deployment_data,
-                        deployment_spec,host_spec,pod_data,pod_spec]},
+                        config_node,config_node_app,config_node_sup,
+                        deployment_data,deployment_spec,host_spec,pod_data,
+                        pod_spec]},
               {licenses,["Apache 2.0"]},
               {links,[]}]}.

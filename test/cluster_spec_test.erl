@@ -107,9 +107,6 @@ item()->
     ["c100","c200","c201"]=cluster_spec:item(hostnames,"production"),
     4=cluster_spec:item(num_pods,"production"),
     
-   
-  
-   
     {error,[undefined_key,glurk]}=cluster_spec:item(glurk,"production"),
     {error,[cluster_name_eexists,"glurk"]}=cluster_spec:item(uid,"glurk"),
     
@@ -118,17 +115,6 @@ item()->
     ok.
 
 
-%% --------------------------------------------------------------------
-%% Function: available_hosts()
-%% Description: Based on hosts.config file checks which hosts are avaible
-%% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
-%% --------------------------------------------------------------------
-cluster_stop_test()->
-    io:format("Start ~p~n",[?FUNCTION_NAME]),
-
-    
-    io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
-    ok.
 
 %% --------------------------------------------------------------------
 %% Function: available_hosts()

@@ -103,17 +103,16 @@ item()->
 
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
-    "c100"=host_spec:item(hostname,"c100"),
-    "192.168.1.100"=host_spec:item(local_ip,"c100"),
+    "192.168.1.100"=config_node:host_local_ip("c100"),
     "joqhome.asuscomm.com"=host_spec:item(public_ip,"c100"),
-    22=host_spec:item(ssh_port,"c100"),
-    "joq62"=host_spec:item(uid,"c100"),
-    "festum01"=host_spec:item(passwd,"c100"),
+    22=config_node:host_ssh_port("c100"),
+    "joq62"=config_node:host_uid("c100"),
+    "festum01"=config_node:host_passwd("c100"),
     [{conbee,
       [{conbee_addr,"172.17.0.2"},
        {conbee_port,80},
        {conbee_key,"D83FA13F74"}]}
-    ]=host_spec:item(application_config,"c100"),
+    ]=config_node:host_application_config("c100"),
   
    
     {error,[undefined_key,glurk]}=host_spec:item(glurk,"c100"),
@@ -123,18 +122,6 @@ item()->
 
     ok.
 
-
-%% --------------------------------------------------------------------
-%% Function: available_hosts()
-%% Description: Based on hosts.config file checks which hosts are avaible
-%% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
-%% --------------------------------------------------------------------
-cluster_stop_test()->
-    io:format("Start ~p~n",[?FUNCTION_NAME]),
-
-    
-    io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
-    ok.
 
 %% --------------------------------------------------------------------
 %% Function: available_hosts()
@@ -151,6 +138,7 @@ setup()->
     {ok,Bin}=file:read_file(?SourceFile),
     ok=file:write_file(?File,Bin),
        
+    ok=application:start(config_node),
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
 
     ok.
