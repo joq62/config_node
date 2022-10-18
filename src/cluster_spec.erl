@@ -16,9 +16,11 @@
 	 read_spec/0,
 	 read_spec/1,
 	 all_names/0,
+	 all_names/1,
 	 info/1,
-	 item/2
-
+	 info/2,
+	 item/2,
+	 item/3
 	]).
 
 		 
@@ -41,7 +43,6 @@
 %% --------------------------------------------------------------------
 read_spec()->
     read_spec(?SpecFile).
-
 read_spec(SpecFile)->
     Result=case file:consult(SpecFile) of
 	       {error,Reason}->
@@ -58,7 +59,9 @@ read_spec(SpecFile)->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 all_names()->
-    {ok,SpecList}=read_spec(),
+    all_names(?SpecFile).
+all_names(SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),
     [proplists:get_value(name,Spec)||Spec<-SpecList].
 
 %% --------------------------------------------------------------------
@@ -67,7 +70,9 @@ all_names()->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 info(ClusterName)->
-    {ok,SpecList}=read_spec(),    
+    info(ClusterName,?SpecFile).
+info(ClusterName,SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),    
     R=[Spec||Spec<-SpecList,
 		       ClusterName=:=proplists:get_value(name,Spec)],
     Result=case R of
@@ -82,8 +87,10 @@ info(ClusterName)->
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
-item(Key,Hostname)->
-    Result=case info(Hostname) of
+item(Key,ClusterName)->
+    item(Key,ClusterName,?SpecFile).
+item(Key,ClusterName,SpecFile)->
+    Result=case info(ClusterName,SpecFile) of
 	       {error,Reason}->
 		   {error,Reason};
 	       Spec->

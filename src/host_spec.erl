@@ -16,8 +16,11 @@
 	 read_spec/0,
 	 read_spec/1,
 	 all_names/0,
+	 all_names/1,
 	 info/1,
-	 item/2
+	 info/2,
+	 item/2,
+	 item/3
 
 	]).
 
@@ -41,7 +44,6 @@
 %% --------------------------------------------------------------------
 read_spec()->
     read_spec(?SpecFile).
-
 read_spec(SpecFile)->
     Result=case file:consult(SpecFile) of
 	       {error,Reason}->
@@ -58,7 +60,9 @@ read_spec(SpecFile)->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 all_names()->
-    {ok,SpecList}=read_spec(),
+    all_names(?SpecFile).
+all_names(SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),
     [proplists:get_value(hostname,Spec)||Spec<-SpecList].
 
 %% --------------------------------------------------------------------
@@ -67,7 +71,9 @@ all_names()->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 info(Hostname)->
-    {ok,SpecList}=read_spec(),    
+    info(Hostname,?SpecFile).
+info(Hostname,SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),   
     R=[Spec||Spec<-SpecList,
 		       Hostname=:=proplists:get_value(hostname,Spec)],
     Result=case R of
@@ -83,7 +89,9 @@ info(Hostname)->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 item(Key,Hostname)->
-    Result=case info(Hostname) of
+    item(Key,Hostname,?SpecFile).
+item(Key,Hostname,SpecFile)->
+    Result=case info(Hostname,SpecFile) of
 	       {error,Reason}->
 		   {error,Reason};
 	       Spec->

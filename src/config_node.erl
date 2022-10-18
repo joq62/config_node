@@ -23,7 +23,13 @@
 %% Key Data structures
 %% 
 %% --------------------------------------------------------------------
--record(state, {}).
+-record(state, {
+		application_spec,
+		cluster_spec,
+		deployment_spec,
+		host_spec,
+		spec_dir
+	       }).
 
 
 
@@ -208,9 +214,20 @@ ping()->
 %
 %% --------------------------------------------------------------------
 init([]) ->
+    AllEnvs=application:get_all_env(?MODULE),
+    {application_spec,ApplicationSpec}=lists:keyfind(application_spec,1,AllEnvs),
+    {cluster_spec,ClusterSpec}=lists:keyfind(cluster_spec,1,AllEnvs),
+    {deployment_spec,DeploymentSpec}=lists:keyfind(deployment_spec,1,AllEnvs),
+    {host_spec,HostSpec}=lists:keyfind(host_spec,1,AllEnvs),
+    {spec_dir,SpecDir}=lists:keyfind(spec_dir,1,AllEnvs),
     
-    
-    {ok, #state{}}.
+
+    {ok, #state{
+	    application_spec=ApplicationSpec,
+	    cluster_spec=ClusterSpec,
+	    deployment_spec=DeploymentSpec,
+	    host_spec=HostSpec,
+	    spec_dir=SpecDir}}.
     
 %% --------------------------------------------------------------------
 %% Function: handle_call/3
@@ -225,8 +242,10 @@ init([]) ->
 
 
 %% deployment_specs
-handle_call({deployment_spec_all_filenames},_From,State) ->
-    Reply=deployment_spec_lib:all_filenames(),
+handle_call({deployment_all_filenames},_From,State) ->
+    io:format("MayDay gonna crash loadly ++++++++++++++++++++ !!! ~p~n",[?MODULE]),
+    A=0,
+    Reply=A/0,
     {reply, Reply, State};
 handle_call({deployment_spec_all_files},_From,State) ->
     Reply=deployment_spec_lib:all_files(),
@@ -236,23 +255,23 @@ handle_call({deployment_spec_all_info},_From,State) ->
     {reply, Reply, State};
 
 handle_call({deployment_cluster_name,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(cluster_name,DeploymentName),
+    Reply=deployment_spec_lib:item(cluster_name,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 handle_call({deployment_spec_workers,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(cluster_name,DeploymentName),
+    Reply=deployment_spec_lib:item(cluster_name,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 handle_call({deployment_num_instances,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(num_instances,DeploymentName),
+    Reply=deployment_spec_lib:item(num_instances,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 handle_call({deployment_hostnames,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(hostnames,DeploymentName),
+    Reply=deployment_spec_lib:item(hostnames,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 
 handle_call({deployment_host_constraints,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(host_constraints,DeploymentName),
+    Reply=deployment_spec_lib:item(host_constraints,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 handle_call({deployment_pod_constraints,DeploymentName},_From,State) ->
-    Reply=deployment_spec_lib:item(pod_constraints,DeploymentName),
+    Reply=deployment_spec_lib:item(pod_constraints,DeploymentName,State#state.deployment_spec),
     {reply, Reply, State};
 
 %%----------------- application_info_specs
@@ -270,27 +289,27 @@ handle_call({application_all_info},_From,State) ->
 
 
 handle_call({application_app,AppId},_From,State) ->
-    Reply=application_spec:item(app,AppId),
+    Reply=application_spec:item(app,AppId,State#state.application_spec),
     {reply, Reply, State};
 
 handle_call({application_vsn,AppId},_From,State) ->
-    Reply=application_spec:item(vsn,AppId),
+    Reply=application_spec:item(vsn,AppId,State#state.application_spec),
     {reply, Reply, State};
 
 handle_call({application_gitpath,AppId},_From,State) ->
-    Reply=application_spec:item(gitpath,AppId),
+    Reply=application_spec:item(gitpath,AppId,State#state.application_spec),
     {reply, Reply, State};
 
 handle_call({application_start_cmd,AppId},_From,State) ->
-    Reply=application_spec:item(cmd,AppId),
+    Reply=application_spec:item(cmd,AppId,State#state.application_spec),
     {reply, Reply, State};
 
 handle_call({application_member,AppId},_From,State) ->
-    Reply=application_spec:member(AppId),
+    Reply=application_spec:member(AppId,State#state.application_spec),
     {reply, Reply, State};
 
 handle_call({application_member,AppId,Vsn},_From,State) ->
-    Reply=application_spec:member(AppId,Vsn),
+    Reply=application_spec:member(AppId,Vsn,State#state.application_spec),
     {reply, Reply, State};
 
 %%--------------- host_info_specs
@@ -304,45 +323,45 @@ handle_call({host_all_hostnames},_From,State) ->
     {reply, Reply, State};
 
 handle_call({host_local_ip,HostName},_From,State) ->
-    Reply=host_spec:item(local_ip,HostName),
+    Reply=host_spec:item(local_ip,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 handle_call({host_public_ip,HostName},_From,State) ->
-        Reply=host_spec:item(public_ip,HostName),
+        Reply=host_spec:item(public_ip,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 handle_call({host_ssh_port,HostName},_From,State) ->
-    Reply=host_spec:item(ssh_port,HostName),
+    Reply=host_spec:item(ssh_port,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 handle_call({host_uid,HostName},_From,State) ->
-    Reply=host_spec:item(uid,HostName),
+    Reply=host_spec:item(uid,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 handle_call({host_passwd,HostName},_From,State) ->
-    Reply=host_spec:item(passwd,HostName),
+    Reply=host_spec:item(passwd,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 handle_call({host_application_config,HostName},_From,State) ->
-    Reply=host_spec:item(application_config,HostName),
+    Reply=host_spec:item(application_config,HostName,State#state.host_spec),
     {reply, Reply, State};
 
 %%--------------- cluster specs
 
 handle_call({cluster_cookie,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(cookie,ClusterName),
+    Reply=cluster_spec:item(cookie,ClusterName,State#state.cluster_spec),
     {reply, Reply, State};
 
 handle_call({cluster_dir,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(dir,ClusterName),
+    Reply=cluster_spec:item(dir,ClusterName,State#state.cluster_spec),
     {reply, Reply, State};
 
 handle_call({cluster_hostnames,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(hostnames,ClusterName),
+    Reply=cluster_spec:item(hostnames,ClusterName,State#state.cluster_spec),
     {reply, Reply, State};
 
 handle_call({cluster_num_pods,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(num_pods,ClusterName),
+    Reply=cluster_spec:item(num_pods,ClusterName,State#state.cluster_spec),
     {reply, Reply, State};
 
 

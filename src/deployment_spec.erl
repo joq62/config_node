@@ -16,8 +16,11 @@
 	 read_spec/0,
 	 read_spec/1,
 	 all_names/0,
+	 all_names/1,
 	 info/1,
-	 item/2
+	 info/2,
+	 item/2,
+	 item/3
 
 	]).
 
@@ -39,7 +42,6 @@
 %% --------------------------------------------------------------------
 read_spec()->
     read_spec(?SpecFile).
-
 read_spec(SpecFile)->
     Result=case file:consult(SpecFile) of
 	       {error,Reason}->
@@ -56,7 +58,9 @@ read_spec(SpecFile)->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 all_names()->
-    {ok,SpecList}=read_spec(),
+    all_names(?SpecFile).
+all_names(SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),
     [proplists:get_value(deploy_name,Spec)||Spec<-SpecList].
 
 %% --------------------------------------------------------------------
@@ -65,7 +69,9 @@ all_names()->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 info(DeploymentName)->
-    {ok,SpecList}=read_spec(),    
+    info(DeploymentName,?SpecFile).
+info(DeploymentName,SpecFile)->
+    {ok,SpecList}=read_spec(SpecFile),    
     R=[Spec||Spec<-SpecList,
 	     DeploymentName=:=proplists:get_value(deploy_name,Spec)],
     Result=case R of
@@ -81,7 +87,9 @@ info(DeploymentName)->
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
 item(Key,DeploymentName)->
-    Result=case info(DeploymentName) of
+    item(Key,DeploymentName,?SpecFile).
+item(Key,DeploymentName,SpecFile)->
+    Result=case info(DeploymentName,SpecFile) of
 	       {error,Reason}->
 		   {error,Reason};
 	       Spec->
