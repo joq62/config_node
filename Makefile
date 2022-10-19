@@ -38,18 +38,12 @@ eunit:
 	rm -rf rebar.lock;
 	rm -rf Mnesia.*;
 	rm -rf ebin;
-	mkdir  application_info_specs;
-	cp /home/joq62/erlang/specifications/application_info_specs/*.spec application_info_specs;
-	mkdir  host_info_specs;
-	cp /home/joq62/erlang/specifications/host_info_specs/*.host host_info_specs;
-	mkdir deployment_info_specs;
-	cp /home/joq62/erlang/specifications/deployment_info_specs/*.depl deployment_info_specs;
-	mkdir deployments;
-	cp /home/joq62/erlang/specifications/deployments/*.depl_spec deployments;
+	rm -rf test/specs/spec.*;
+	cp /home/joq62/erlang/infra_2/specs/spec.* test/specs;
 	mkdir test_ebin;
 	mkdir ebin;
 	rebar3 compile;
 	cp _build/default/lib/*/ebin/* ebin;
 	cp ../common/ebin/* test_ebin;
 	erlc -I include -o test_ebin test/*.erl;
-	erl -pa * -pa ebin -pa test_ebin -sname config_test -run $(m) start -setcookie config_node -hidden
+	erl -pa * -pa ebin -pa test_ebin -sname config_test -run $(m) start -setcookie config_node

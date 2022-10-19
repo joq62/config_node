@@ -45,16 +45,8 @@ read_spec()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
   
     {ok,Spec}=application_spec:read_spec(),
-   [
-    [{name,"common"},{vsn,["0.1.0"]},{app,common},{gitpath,"https://github.com/joq62/common.git"}],
-    [{name,"nodelog"},{vsn,["0.1.0"]},{app,nodelog},{gitpath,"https://github.com/joq62/node.git"}],
-    [{name,"sd"},{vsn,["0.1.0"]},{app,sd},{gitpath,"https://github.com/joq62/sd.git"}],
-    [{name,"test_add"},{vsn,["0.1.0"]},{app,test_add},{gitpath,"https://github.com/joq62/test_add.git"}],
-    [{name,"test_divi"},{vsn,["0.1.0"]},{app,test_divi},{gitpath,"https://github.com/joq62/test_divi.git"}],
-    [{name,"test_math"},{vsn,["0.1.0"]},{app,test_math},{gitpath,"https://github.com/joq62/test_math.git"}],
-    [{name,"test_sub"},{vsn,["0.1.0"]},{app,test_sub},{gitpath,"https://github.com/joq62/test_sub.git"}],
-    [{name,"web_conbee_c201"},{vsn,["0.1.0"]},{app,web_conbee_c201},{gitpath,"https://github.com/joq62/web_conbee_c201.git"}]
-   ]=lists:sort(Spec),
+    [
+     [{name,"cluster_node"},{vsn,["0.1.0"]},{app,cluster_node},{gitpath,"https://github.com/joq62/cluster_node.git"}]|_]=lists:sort(Spec),
       
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
     ok.
@@ -71,9 +63,16 @@ all_names()->
      io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
     AllNames=application_spec:all_names(),
-   ["common","nodelog","sd",
-    "test_add","test_divi","test_math","test_sub",
-    "web_conbee_c201"
+    ["cluster_node",
+     "common",
+     "nodelog",
+     "pod_node",
+     "sd",
+     "test_add",
+     "test_divi",
+     "test_math",
+     "test_sub",
+     "web_conbee_c201"
    ]=lists:sort(AllNames),
   
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    

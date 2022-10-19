@@ -46,12 +46,20 @@ read_spec()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
   
     {ok,Spec}=cluster_spec:read_spec(),
-   [
-    [{name,"production"},{cookie,"production_cookie"},{dir,"production.dir"},
-     {hostnames,["c100","c200","c201"]},{num_pods,4}],
-    [{name,"test_cluster"},{cookie,"test_cluster_cookie"},{dir,"test_cluster.dir"},
-     {hostnames,["c100","c200","c201"]},{num_pods,6}]
-   ]=lists:sort(Spec),
+    [
+     [{name,"test_cluster"},{cookie,"test_cluster"},{connect_name,"test_cluster_0"},
+      {pod_names,["test_cluster_1",
+		 "test_cluster_2",
+		 "test_cluster_3",
+		 "test_cluster_4",
+		 "test_cluster_5",
+		 "test_cluster_6"]},
+      {pod_dir_extension,".dir"},
+      {num_pods,6},
+      {pod_services,["pod_node"]},
+      {hostnames,["c100","c200","c201"]}
+     ]
+    ]=lists:sort(Spec),
       
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
     ok.
@@ -68,7 +76,7 @@ all_names()->
      io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
     AllNames=cluster_spec:all_names(),
-    ["production","test_cluster"]=lists:sort(AllNames),
+    ["test_cluster"]=lists:sort(AllNames),
   
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    
     ok.
@@ -80,15 +88,23 @@ all_names()->
 %% --------------------------------------------------------------------
 info()->
      io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-    
-    Info=cluster_spec:info("production"),
-    [{name,"production"},
-     {cookie,"production_cookie"},
-     {dir,"production.dir"},
-     {hostnames,["c100","c200","c201"]},
-     {num_pods,4}
-    ]=Info, 
-    
+     
+    Info=cluster_spec:info("test_cluster"),
+    [{name,"test_cluster"},
+     {cookie,"test_cluster"},
+     {connect_name,"test_cluster_0"},
+     {pod_names,["test_cluster_1",
+		"test_cluster_2",
+		"test_cluster_3",
+		"test_cluster_4",
+		"test_cluster_5",
+		"test_cluster_6"]},
+     {pod_dir_extension,".dir"},
+     {num_pods,6},
+     {pod_services,["pod_node"]},
+     {hostnames,["c100","c200","c201"]}
+    ]=Info,
+
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    
     ok.
 
@@ -102,12 +118,22 @@ item()->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
 
   
-    "production_cookie"=config_node:cluster_cookie("production"),
-    "production.dir"=config_node:cluster_dir("production"),
-    ["c100","c200","c201"]=config_node:cluster_hostnames("production"),
-    4=config_node:cluster_num_pods("production"),
-    
-    {error,[cluster_name_eexists,"glurk"]}=config_node:cluster_num_pods("glurk"),
+    "test_cluster"=config_node:cluster_name("test_cluster"),
+    "test_cluster"=config_node:cluster_cookie("test_cluster"),
+    "test_cluster_0"=config_node:cluster_connect_name("test_cluster"),
+    ["test_cluster_1",
+     "test_cluster_2",
+     "test_cluster_3",
+     "test_cluster_4",
+     "test_cluster_5",
+     "test_cluster_6"]=config_node:cluster_pod_names("test_cluster"),
+    ".dir"=config_node:cluster_pod_dir_extension("test_cluster"),
+    6=config_node:cluster_num_pods("test_cluster"),
+    ["pod_node"]=config_node:cluster_pod_services("test_cluster"),
+    ["c100","c200","c201"]=config_node:cluster_hostnames("test_cluster"),
+  
+
+  {error,[cluster_name_eexists,"glurk"]}=config_node:cluster_num_pods("glurk"),
     
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),    
 
@@ -120,7 +146,7 @@ item()->
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
--define(SourceFile,"./test/specs/spec_1.cluster").
+-define(SourceFile,"./test/specs/spec.cluster").
 -define(File,"spec.cluster").
 	 	 
 

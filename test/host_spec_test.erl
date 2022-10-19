@@ -128,7 +128,7 @@ item()->
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
--define(SourceFile,"./test/specs/spec_1.host").
+-define(SourceFile,"./test/specs/spec.host").
 -define(File,"spec.host").
 	 	 
 
@@ -138,7 +138,6 @@ setup()->
     {ok,Bin}=file:read_file(?SourceFile),
     ok=file:write_file(?File,Bin),
        
-    ok=application:start(config_node),
-    io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
+     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
 
     ok.

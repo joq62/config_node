@@ -42,11 +42,26 @@
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
+
 -export([ 
+	  application_spec/0,
+	  cluster_spec/0,
+	  deployment_spec/0,
+	  host_spec/0,
+	  spec_dir/0	  
+	  
+	]).
+
+-export([ 
+	  cluster_name/1,
 	  cluster_cookie/1,
-	  cluster_dir/1,
-	  cluster_hostnames/1,
-	  cluster_num_pods/1
+	  cluster_connect_name/1,
+	  cluster_pod_names/1,
+	  cluster_pod_dir_extension/1,
+	  cluster_num_pods/1,
+	  cluster_pod_services/1,
+	  cluster_hostnames/1
+	
 	  
 	]).
 
@@ -110,17 +125,38 @@ appl_start([])->
 start()-> gen_server:start_link({local, ?SERVER}, ?SERVER, [], []).
 stop()-> gen_server:call(?SERVER, {stop},infinity).
 
+application_spec()->
+    gen_server:call(?SERVER, {application_spec},infinity).
+cluster_spec()->
+    gen_server:call(?SERVER, {cluster_spec},infinity).
+deployment_spec()->
+    gen_server:call(?SERVER, {deployment_spec},infinity).
+host_spec()->
+    gen_server:call(?SERVER, {host_spec},infinity).
+spec_dir()->
+    gen_server:call(?SERVER, {spec_dir},infinity).
+
 
 %% cluster spec
 
+cluster_name(ClusterName)->
+    gen_server:call(?SERVER, {cluster,name,ClusterName},infinity).
 cluster_cookie(ClusterName)->
-    gen_server:call(?SERVER, {cluster_cookie,ClusterName},infinity).
-cluster_dir(ClusterName)->
-    gen_server:call(?SERVER, {cluster_dir,ClusterName},infinity).
-cluster_hostnames(ClusterName)->
-    gen_server:call(?SERVER, {cluster_hostnames,ClusterName},infinity).
+    gen_server:call(?SERVER, {cluster,cookie,ClusterName},infinity).
+cluster_connect_name(ClusterName)->
+    gen_server:call(?SERVER, {cluster,connect_name,ClusterName},infinity).
+cluster_pod_names(ClusterName)->
+    gen_server:call(?SERVER, {cluster,pod_names,ClusterName},infinity).
+cluster_pod_dir_extension(ClusterName)->
+    gen_server:call(?SERVER, {cluster,pod_dir_extension,ClusterName},infinity).
 cluster_num_pods(ClusterName)->
-    gen_server:call(?SERVER, {cluster_num_pods,ClusterName},infinity).
+    gen_server:call(?SERVER, {cluster,num_pods,ClusterName},infinity).
+
+cluster_pod_services(ClusterName)->
+    gen_server:call(?SERVER, {cluster,pod_services,ClusterName},infinity).
+
+cluster_hostnames(ClusterName)->
+    gen_server:call(?SERVER, {cluster,hostnames,ClusterName},infinity).
 
 
 %% application spec
@@ -240,13 +276,30 @@ init([]) ->
 %%          {stop, Reason, State}            (aterminate/2 is called)
 %% --------------------------------------------------------------------
 
+handle_call({application_spec},_From,State) ->
+    Reply=State#state.application_spec,
+    {reply, Reply, State};
+
+handle_call({cluster_spec},_From,State) ->
+    Reply=State#state.cluster_spec,
+    {reply, Reply, State};
+
+handle_call({deployment_spec},_From,State) ->
+    Reply=State#state.deployment_spec,
+    {reply, Reply, State};
+
+handle_call({host_spec},_From,State) ->
+    Reply=State#state.host_spec,
+    {reply, Reply, State};
+
+
+handle_call({spec_dir},_From,State) ->
+    Reply=State#state.spec_dir,
+    {reply, Reply, State};
+
 
 %% deployment_specs
-handle_call({deployment_all_filenames},_From,State) ->
-    io:format("MayDay gonna crash loadly ++++++++++++++++++++ !!! ~p~n",[?MODULE]),
-    A=0,
-    Reply=A/0,
-    {reply, Reply, State};
+
 handle_call({deployment_spec_all_files},_From,State) ->
     Reply=deployment_spec_lib:all_files(),
     {reply, Reply, State};
@@ -348,22 +401,9 @@ handle_call({host_application_config,HostName},_From,State) ->
 
 %%--------------- cluster specs
 
-handle_call({cluster_cookie,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(cookie,ClusterName,State#state.cluster_spec),
+handle_call({cluster,Item,ClusterName},_From,State) ->
+    Reply=cluster_spec:item(Item,ClusterName,State#state.cluster_spec),
     {reply, Reply, State};
-
-handle_call({cluster_dir,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(dir,ClusterName,State#state.cluster_spec),
-    {reply, Reply, State};
-
-handle_call({cluster_hostnames,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(hostnames,ClusterName,State#state.cluster_spec),
-    {reply, Reply, State};
-
-handle_call({cluster_num_pods,ClusterName},_From,State) ->
-    Reply=cluster_spec:item(num_pods,ClusterName,State#state.cluster_spec),
-    {reply, Reply, State};
-
 
 %%----------------------------------------------------------------------
 

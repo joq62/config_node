@@ -142,7 +142,7 @@ cluster_stop_test()->
 %% Description: Based on hosts.config file checks which hosts are avaible
 %% Returns: List({HostId,Ip,SshPort,Uid,Pwd}
 %% --------------------------------------------------------------------
--define(SourceDepFile,"./test/specs/spec_2.deployment").
+-define(SourceDepFile,"./test/specs/spec.deployment").
 -define(DepFile,"spec.deployment").
 	 	 
 

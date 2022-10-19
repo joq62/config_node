@@ -68,6 +68,7 @@ setup()->
 				 {application_spec,?ApplicationFile},
 				 {spec_dir,"."}]}],
     ok=application:set_env(ConfigNodeEnv),
+    application:start(config_node),
     
     io:format("Stop OK !!! ~p~n",[?FUNCTION_NAME]),
 
